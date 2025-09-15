@@ -1,0 +1,77 @@
+# ---- build outputs ----
+/build/
+/out/
+/bin/
+/lib/
+/CMakeFiles/
+/CMakeCache.txt
+/*.sln
+/*.vcxproj
+/*.vcxproj.filters
+/*.vcxproj.user
+/*.dir/
+
+# ---- CMake intermediate ----
+/Testing/
+/CTestTestfile.cmake
+/DartConfiguration.tcl
+/cmake_install.cmake
+/compile_commands.json
+/_deps/
+
+# ---- Visual Studio / MSBuild ----
+*.obj
+*.pdb
+*.idb
+*.ipch
+*.exe
+*.dll
+*.lib
+*.ilk
+*.log
+*.sdf
+*.suo
+*.user
+*.cache
+*.opensdf
+*.VC.db
+*.VC.VC.opendb
+
+# ---- VS Code ----
+.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ---- OS junk ----
+# macOS
+.DS_Store
+.AppleDouble
+.idea/
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ---- packaging ----
+/dist/
+/package/
+/*.zip
+/*.tar.gz
+
+# ---- test artifacts ----
+/Testing/
+/test-results/
+/coverage/
+
+# ---- logs ----
+*.log
+*.tlog
+
+# ---- backup / temp ----
+*~
+*.swp
+*.bak
+*.tmp
