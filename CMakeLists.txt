@@ -8,12 +8,23 @@ option(JSONLIB_USE_EXCEPTIONS "Enable exception in API" OFF)
 # # Compiler settings 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # for MSVC: use static runtime /MT and debug static runtime (/MTd) 
 # in Debug builds.
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+# Enable AddressSanitizer for MSVC in Debug mode:
+#   /fsanitize=address : Enable AddressSanitizer (detects memory errors)
+#   /Zi                : Generate debug info
+#   /INCREMENTAL:NO    : Disable incremental linking (required for ASan)
+# set(sanitize_flags "/fsanitize=address /Zi /INCREMENTAL:NO")
+
 # define library target name (jsonlib):
-add_library(jsonlib src/json_value.cpp)
+add_library(jsonlib 
+    src/json_value.cpp
+    src/json_parse.cpp
+    src/json_stringify.cpp
+)
 target_include_directories(jsonlib PUBLIC
     # Tell CMake where headers are:
     $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>      # for use in build tree
@@ -35,11 +46,10 @@ if (MSVC)
     #       (https://learn.microsoft.com/en-us/cpp/build/reference/permissive-standards-conformance?view=msvc-170)
     # - /utf-8: source files are in UTF-8 encoding                  
     target_compile_options(jsonlib PRIVATE /W4 /permissive- /utf-8)
-    set(sanitize_flags "/fsanitize=address /Zi /INCREMENTAL:NO")
 
-    # "$<$<CONFIG:Debug>:...>": only apply these flags if we’re building in Debug mode.
-    target_compile_options(jsonlib PRIVATE "$<$<CONFIG:Debug>:${sanitize_flags}>")
-    target_link_options(jsonlib PRIVATE "$<$<CONFIG:Debug>:${sanitize_flags}>")
+    # ## "$<$<CONFIG:Debug>:...>": only apply these flags if we’re building in Debug mode.
+    # target_compile_options(jsonlib PRIVATE "$<$<CONFIG:Debug>:${sanitize_flags}>")
+    # target_link_options(jsonlib PRIVATE "$<$<CONFIG:Debug>:${sanitize_flags}>")
 endif()
 
 if (JSONLIB_BUILD_TESTS)
@@ -49,7 +59,12 @@ if (JSONLIB_BUILD_TESTS)
         GIT_TAG        v1.14.0)
     FetchContent_MakeAvailable(googletest)  # ensures the named dependencies have been populated
     enable_testing()
-    add_executable(jsonlib_tests tests/test_smoke.cpp)
+    add_executable(jsonlib_tests 
+        tests/test_smoke.cpp
+        tests/test_parse.cpp
+        tests/test_stringify.cpp
+    )
     target_link_libraries(jsonlib_tests PRIVATE jsonlib GTest::gtest_main)
+    # target_compile_options(jsonlib_tests PRIVATE "$<$<CONFIG:Debug>:${sanitize_flags}>")
     add_test(NAME jsonlib_tests COMMAND jsonlib_tests)
 endif()
